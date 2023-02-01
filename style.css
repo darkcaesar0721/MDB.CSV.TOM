@@ -43,3 +43,7 @@ label.text-center {
     font-size: 1.3rem;
     text-align: center !important;
 }
+
+.select-group {
+    background-color:#e5e2e2;
+}
