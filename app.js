@@ -13,6 +13,23 @@ const App = function() {
         $('input[name=xls_path]').val(current_xls_path);
 
         handleTimeChange(current_time);
+
+        toastr.options = {
+            'closeButton': true,
+            'debug': false,
+            'newestOnTop': false,
+            'progressBar': false,
+            'positionClass': 'toast-top-right',
+            'preventDuplicates': false,
+            'showDuration': '1000',
+            'hideDuration': '1000',
+            'timeOut': '5000',
+            'extendedTimeOut': '1000',
+            'showEasing': 'swing',
+            'hideEasing': 'linear',
+            'showMethod': 'fadeIn',
+            'hideMethod': 'fadeOut',
+        }
     }
 
     const initAttachEvent = function() {
@@ -114,8 +131,13 @@ const App = function() {
                 csv_path: current_csv_path,
                 xls_path: current_xls_path,
             },
-            success: function(){
+            dataType: 'JSON',
+            success: function(resp){
                 $('body').unblock();
+
+                if (resp.status === 'error') {
+                    toastr.error(resp.description);
+                }
             },
             error: function(){
             }

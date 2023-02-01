@@ -1,5 +1,10 @@
 <?php
-$accdatabase="D:\LeadDB_ThisSMALL.mdb";
+
+$mdb_path = $_REQUEST['mdb_path'];
+$csv_path = $_REQUEST['csv_path'];
+$xls_path = $_REQUEST['xls_path'];
+
+$accdatabase = $mdb_path;
 
 try {
     # OPEN BOTH DATABASE CONNECTIONS
@@ -68,12 +73,8 @@ ORDER BY [002_DateInput].SystemCreateDate DESC";
         print_r($row); exit;
     }
 }
+
 catch(PDOException $e) {
-    echo $e->getMessage()."\n";
+    echo json_encode(array('status' => 'error', 'description' => 'mdb file path wrong'));
     exit;
 }
-
-// CLOSE CONNECTIONS
-$accConn = null;
-$myConn = null;
-
