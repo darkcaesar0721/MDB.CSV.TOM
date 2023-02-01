@@ -1,0 +1,45 @@
+body {
+    font-family: monospace;
+}
+
+.section-group {
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+label[for=download_file_type] {
+    color: #3237d7;
+    font-size: 2rem;
+    line-height: 2rem;
+    text-align: left !important;
+}
+
+label.csv-file-name {
+    font-size: 1.3rem;
+    text-align: left !important;
+}
+
+label.folder-name {
+    color: #9395cf;
+    font-size: 2rem;
+    line-height: 2rem;
+    text-align: center !important;
+}
+
+label.group-name {
+    color: #93aec5;
+    font-size: 2rem;
+    line-height: 2rem;
+    text-align: center !important;
+}
+
+label.excel-file-name {
+    color: #93aec5;
+    text-align: center !important;
+}
+
+label.text-center {
+    font-size: 1.3rem;
+    text-align: center !important;
+}

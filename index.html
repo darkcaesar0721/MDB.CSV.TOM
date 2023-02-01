@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="style.css" rel="stylesheet" type="text/css">
+
+    <title>MDB TO CSV AND XLS</title>
+</head>
+<body>
+    <div class="jumbotron text-center">
+        <h1>MDB TO CSV AND XLS</h1>
+        <p>Please set mdb, csv, and xls path, then press download button!</p>
+    </div>
+    <div class="container">
+        <div class="row section-group">
+            <div class="col-sm-4">
+                <h4>INPUT MDB FILE PATH</h4>
+                <div class="input-group">
+                    <span class="input-group-addon">MDB</span>
+                    <input id="mdb_path" type="text" class="form-control" name="mdb_path" placeholder="D:\LeadDB_ThisSMALL.mdb">
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <h4>INPUT CSV DOWNLOAD PATH</h4>
+                <div class="input-group">
+                    <span class="input-group-addon">CSV</span>
+                    <input id="csv_path" type="text" class="form-control" name="csv_path" placeholder="D:\work\CSV">
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <h4>INPUT XLS DOWNLOAD PATH</h4>
+                <div class="input-group">
+                    <span class="input-group-addon">XLS</span>
+                    <input id="xls_path" type="text" class="form-control" name="xls_path" placeholder="D:\work\XLS">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-1" style="margin-top: 2rem">
+            <form class="col-sm-8 col-sm-offset-2 row form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="download_file_type">Download Way</label>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="download_time" name="download_time">
+                            <option value="8AM">8AM</option>
+                            <option value="2PM">2PM</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="download_file_type" name="download_file_type">
+                            <option>CSV & XLS</option>
+                            <option>CSV</option>
+                            <option>XLS</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-primary">DOWNLOAD</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 col-sm-offset-2 folder-name">Folder Name</label>
+                    <label class="control-label col-sm-4 folder-name">01262023 2PM</label>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-sm-7 section-group">
+                <form class="row form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4 col-sm-offset-4 group-name">CSV FILE LIST</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">00_ALL_01262023 2PM_CA Window Door shaisak@yahoo.com</label>
+                        <label class="control-label col-sm-4 csv-file-name">06_BAY_01262023 2PM North</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">01_ALL_01262023 2PM_KitchenBathDecksRenovate.csv</label>
+                        <label class="control-label col-sm-4 csv-file-name">07_OR_01262023 2PM</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">02_LA_01262023 2PM</label>
+                        <label class="control-label col-sm-4 csv-file-name">08_TX_Austin_01262023 2PM</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">03_SD_01262023 2PM</label>
+                        <label class="control-label col-sm-4 csv-file-name">09_TX_Houston_01262023 2PM</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">03_SD_01262023 2PM</label>
+                        <label class="control-label col-sm-4 csv-file-name">10_TX_Dallas_01262023 2PM</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 csv-file-name">05_BAY_01262023 2PM South</label>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-5 section-group">
+                <form class="row form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-8 col-sm-offset-2 group-name">Excel Sheet LIST</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 excel-file-name">Excel File Name</label>
+                        <label class="control-label col-sm-6 excel-file-name">01262023 2PM_PALM.xls</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 text-center">WA</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 text-center">BAY</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 text-center">SD</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 text-center">LA</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6 text-center">FL</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
