@@ -157,8 +157,11 @@ try {
             fclose($fp);
         }
 
-        echo json_encode(array('status' => 'success'));
-        exit;
+        $csv_previous_path = $csv_path . "\\" . $folder;
+        if ($file_type === 'csv') {
+            echo json_encode(array('status' => 'success', 'csv_previous_path' => $folder_path, 'xls_previous_path' => $xls_previous_path));
+            exit;
+        }
     } else {
         require 'vendor/autoload.php';
 
@@ -233,7 +236,8 @@ try {
         $writer = new PhpOffice\PhpSpreadsheet\Writer\Xls($mySpreadsheet);
         $writer->save($folder_path . "\\" . $date_str . " " . $time . '_PALM.xls');
 
-        echo json_encode(array('status' => 'success'));
+        $xls_previous_path = $xls_path . "\\" . $folder;
+        echo json_encode(array('status' => 'success', 'csv_previous_path' => $csv_previous_path, 'xls_previous_path' => $xls_previous_path));
         exit;
     }
 }

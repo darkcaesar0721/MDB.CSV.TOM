@@ -91,7 +91,7 @@ const App = function() {
         let str_day = date.getDate();
         if (date.getDate() < 10) str_day = '0' + str_day;
 
-        current_date_str = str_day + str_month + date.getFullYear();
+        current_date_str = str_month + str_day + date.getFullYear();
 
         $('#folder_name').html(current_date_str + ' ' + time);
 
