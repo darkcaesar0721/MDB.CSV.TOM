@@ -133,7 +133,7 @@ const App = function() {
     };
 
     const download = function() {
-        $('body').block({ message: 'wait for downloading file' });
+        // $('body').block({ message: 'wait for downloading file' });
 
         $.ajax({
             url:'api.php',
@@ -152,12 +152,14 @@ const App = function() {
             },
             dataType: 'JSON',
             success: function(resp){
-                $('body').unblock();
+                // $('body').unblock();
 
                 if (resp.status === 'error') {
                     toastr.error(resp.description);
                 } else if (resp.status === 'warning') {
                     toastr.warn(resp.description);
+                } else {
+                    toastr.success('download success');
                 }
             },
             error: function(){
