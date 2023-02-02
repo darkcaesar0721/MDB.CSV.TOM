@@ -4,6 +4,7 @@ const App = function() {
     let current_time = '8AM';
     let current_file_type = 'csv_xls';
     let current_mdb_path = window.localStorage.getItem('mdb_path');
+    let current_count_xls_path = window.localStorage.getItem('count_xls_path');
     let current_csv_path = window.localStorage.getItem('csv_path');
     let current_csv_previous_path = window.localStorage.getItem('csv_previous_path');
     let current_xls_path = window.localStorage.getItem('xls_path');
@@ -12,6 +13,7 @@ const App = function() {
     const setDefaultValue = function() {
 
         $('input[name=mdb_path]').val(current_mdb_path);
+        $('input[name=count_xls_path]').val(current_count_xls_path);
         $('input[name=csv_path]').val(current_csv_path);
         $('input[name=csv_previous_path]').val(current_csv_previous_path);
         $('input[name=xls_path]').val(current_xls_path);
@@ -41,6 +43,11 @@ const App = function() {
         $('input[name=mdb_path]').change(function(e) {
             current_mdb_path = e.target.value;
             window.localStorage.setItem('mdb_path', e.target.value);
+        });
+
+        $('input[name=count_xls_path]').change(function(e) {
+            current_count_xls_path = e.target.value;
+            window.localStorage.setItem('count_xls_path', e.target.value);
         });
 
         $('input[name=csv_path]').change(function(e) {
@@ -145,6 +152,7 @@ const App = function() {
                     time: current_time,
                     file_type: current_file_type,
                     mdb_path: current_mdb_path,
+                    count_xls_path: current_count_xls_path,
                     csv_path: current_csv_path,
                     csv_previous_path : current_csv_previous_path,
                     xls_path: current_xls_path,
@@ -182,6 +190,12 @@ const App = function() {
         if (!$('input[name=mdb_path]').val()) {
             $('input[name=mdb_path]').focus();
             toastr.warning('Please input mdb file path.');
+            return false;
+        }
+
+        if (!$('input[name=count_xls_path]').val()) {
+            $('input[name=count_xls_path]').focus();
+            toastr.warning('Please input count excel file path.');
             return false;
         }
 
