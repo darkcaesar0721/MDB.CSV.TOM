@@ -162,7 +162,8 @@ try {
             echo json_encode(array('status' => 'success', 'csv_previous_path' => $folder_path, 'xls_previous_path' => $xls_previous_path));
             exit;
         }
-    } else {
+    }
+    if ($file_type !== 'csv'){
         require 'vendor/autoload.php';
 
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();

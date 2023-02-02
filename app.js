@@ -133,38 +133,83 @@ const App = function() {
     };
 
     const download = function() {
-        // $('body').block({ message: 'wait for downloading file' });
+        if (validation()) {
+            $('body').block({ message: 'wait for downloading file' });
 
-        $.ajax({
-            url:'api.php',
-            type:'post',
-            data: {
-                date: current_date,
-                date_str: current_date_str,
-                time: current_time,
-                file_type: current_file_type,
-                mdb_path: current_mdb_path,
-                csv_path: current_csv_path,
-                csv_previous_path : current_csv_previous_path,
-                xls_path: current_xls_path,
-                xls_previous_path: current_xls_previous_path,
-                folder: $('#folder_name').html(),
-            },
-            dataType: 'JSON',
-            success: function(resp){
-                // $('body').unblock();
+            $.ajax({
+                url:'api.php',
+                type:'post',
+                data: {
+                    date: current_date,
+                    date_str: current_date_str,
+                    time: current_time,
+                    file_type: current_file_type,
+                    mdb_path: current_mdb_path,
+                    csv_path: current_csv_path,
+                    csv_previous_path : current_csv_previous_path,
+                    xls_path: current_xls_path,
+                    xls_previous_path: current_xls_previous_path,
+                    folder: $('#folder_name').html(),
+                },
+                dataType: 'JSON',
+                success: function(resp){
+                    $('body').unblock();
+                    console.log(resp);
 
-                if (resp.status === 'error') {
-                    toastr.error(resp.description);
-                } else if (resp.status === 'warning') {
-                    toastr.warn(resp.description);
-                } else {
-                    toastr.success('download success');
+                    if (resp.status === 'error') {
+                        toastr.error(resp.description);
+                    } else if (resp.status === 'warning') {
+                        toastr.warning(resp.description);
+                    } else {
+                        current_csv_previous_path = resp.csv_previous_path;
+                        window.localStorage.setItem('csv_previous_path', resp.csv_previous_path);
+                        $('input[name=csv_previous_path]').val(resp.csv_previous_path);
+
+                        current_xls_previous_path = resp.xls_previous_path;
+                        window.localStorage.setItem('xls_previous_path', resp.xls_previous_path);
+                        $('input[name=xls_previous_path]').val(resp.xls_previous_path);
+
+                        toastr.success('download success');
+                    }
+                },
+                error: function(){
                 }
-            },
-            error: function(){
-            }
-        });
+            });
+        }
+    }
+
+    const validation = function() {
+        if (!$('input[name=mdb_path]').val()) {
+            $('input[name=mdb_path]').focus();
+            toastr.warning('Please input mdb file path.');
+            return false;
+        }
+
+        if (!$('input[name=csv_path]').val()) {
+            $('input[name=csv_path]').focus();
+            toastr.warning('Please input csv download path.');
+            return false;
+        }
+
+        if (!$('input[name=csv_previous_path]').val()) {
+            $('input[name=csv_previous_path]').focus();
+            toastr.warning('Please input csv previous download path.');
+            return false;
+        }
+
+        if (!$('input[name=xls_path]').val()) {
+            $('input[name=xls_path]').focus();
+            toastr.warning('Please input xls download path.');
+            return false;
+        }
+
+        if (!$('input[name=xls_previous_path]').val()) {
+            $('input[name=xls_previous_path]').focus();
+            toastr.warning('Please input xls previous download path.');
+            return false;
+        }
+
+        return true;
     }
 
     return {
