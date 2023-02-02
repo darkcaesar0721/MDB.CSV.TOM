@@ -1,6 +1,8 @@
 <?php
+require 'vendor/autoload.php';
 
 $mdb_path = $_REQUEST['mdb_path'];
+$count_xls_path = $_REQUEST['count_xls_path'];
 $csv_path = $_REQUEST['csv_path'];
 $csv_previous_path = $_REQUEST['csv_previous_path'];
 $xls_path = $_REQUEST['xls_path'];
@@ -15,51 +17,66 @@ $date_str = $_REQUEST['date_str'];
 
 $accdatabase = $mdb_path;
 
+if (!file_exists($count_xls_path)) {
+    echo json_encode(array('status' => 'error', 'description' => 'Count xls file path wrong'));
+    exit;
+}
+
 $a_csv = array(
     0 => array(
         'query' => "003a27_00a_Alit_CA Windows Doors  ------------------------  >>",
         'file' => "00_ALL_" . $date_str . " " . $time . "_CA Window Door shaisak@yahoo.com.csv",
+        'count' => ''
     ),
     1 => array(
         'query' => "003a27_01_Alit_ALL_Kitchen Bathroom Decks",
         'file' => "01_ALL_" . $date_str . " " . $time . "_KitchenBathDecksRenovate.csv",
+        'count' => ''
     ),
     2 => array(
         'query' => "003a27_02_Alit_LA",
         'file' => "02_LA_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     3 => array(
         'query' => "003a27_03_Alit_SD",
-        'file' => "03_SD_" . $date_str . " " . $time . ".csv"
+        'file' => "03_SD_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     4 => array(
         'query' => "003a27_04_Alit_WA",
-        'file' => "04_WA_" . $date_str . " " . $time . ".csv"
+        'file' => "04_WA_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     5 => array(
         'query' => "003a27_05_Alit_BAY South",
         'file' => "05_BAY_" . $date_str . " " . $time . " South.csv",
-
+        'count' => ''
     ),
     6 => array(
         'query' => "003a27_06_Alit_BAY North",
-        'file' => "06_BAY_" . $date_str . " " . $time . " North.csv"
+        'file' => "06_BAY_" . $date_str . " " . $time . " North.csv",
+        'count' => ''
     ),
     7 => array(
         'query' => "003a27_07_Alit_OR",
         'file' => "07_OR_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     8 => array(
         'query' => "003a27_08_Alit_Austin",
         'file' => "08_TX_Austin_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     9 => array(
         'query' => "003a27_09_Alit_Houston",
         'file' => "09_TX_Houston_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     ),
     10 => array(
         'query' => "003a27_10_Alit_Dallas",
-        'file' => "10_TX_Dallas_" . $date_str . " " . $time . ".csv"
+        'file' => "10_TX_Dallas_" . $date_str . " " . $time . ".csv",
+        'count' => ''
     )
 );
 
@@ -67,22 +84,27 @@ $a_xls = array(
     0 => array(
         'query' => "003a10_Palm CON WA <<< PALM NEW>>>------------",
         'sheet' => "WA",
+        'count' => ''
     ),
     1 => array(
         'query' => "003a11_Palm CON BAY",
         'sheet' => "BAY",
+        'count' => ''
     ),
     2 => array(
         'query' => "003a12_Palm CON SD",
         'sheet' => "SD",
+        'count' => ''
     ),
     3 => array(
         'query' => "003a13_Palm CON LA",
-        'sheet' => "LA"
+        'sheet' => "LA",
+        'count' => ''
     ),
     4 => array(
         'query' => "003a13a_Palm CON FL",
-        'sheet' => "FL"
+        'sheet' => "FL",
+        'count' => ''
     )
 );
 
@@ -158,14 +180,8 @@ try {
         }
 
         $csv_previous_path = $csv_path . "\\" . $folder;
-        if ($file_type === 'csv') {
-            echo json_encode(array('status' => 'success', 'csv_previous_path' => $folder_path, 'xls_previous_path' => $xls_previous_path));
-            exit;
-        }
     }
     if ($file_type !== 'csv'){
-        require 'vendor/autoload.php';
-
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
 
         if (file_exists($xls_previous_path)) {
@@ -238,12 +254,75 @@ try {
         $writer->save($folder_path . "\\" . $date_str . " " . $time . '_PALM.xls');
 
         $xls_previous_path = $xls_path . "\\" . $folder;
-        echo json_encode(array('status' => 'success', 'csv_previous_path' => $csv_previous_path, 'xls_previous_path' => $xls_previous_path));
-        exit;
     }
-}
-
-catch(PDOException $e) {
+} catch(PDOException $e) {
     echo json_encode(array('status' => 'error', 'description' => 'mdb file path wrong'));
     exit;
 }
+
+$date_info = getDate(strtotime($date));
+$_time = ($time == '8AM' ? '8am' : '2pm');
+
+$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xls");
+$spreadsheet = $reader->load($count_xls_path);
+$sheet = $spreadsheet->getActiveSheet();
+$data = $sheet->toArray();
+
+if ($date_info['wday'] == 4) {
+    $last_row = (int) $sheet->getHighestRow();
+
+    $row = $last_row + 1;
+
+    $col = 1;
+    $sheet->setCellValueByColumnAndRow($col++, $row, $date);
+    $sheet->setCellValueByColumnAndRow($col++, $row, $date_info['weekday'] . ' ' . $_time);
+
+    foreach($a_xls as $index => $xls) {
+        $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
+    }
+    $col++;
+    foreach($a_csv as $index => $csv) {
+        $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
+    }
+} else {
+    $cur_index = -1;
+    $cur_row = [];
+    foreach ($data as $i => $row) {
+        if ($row[0] === $date) {
+            $cur_index = $i; $cur_row = $row;
+        }
+    }
+
+    if ($cur_index === -1) {
+        $last_row = (int) $sheet->getHighestRow();
+
+        $row = $last_row + 1;
+
+        $col = 1;
+        $sheet->setCellValueByColumnAndRow($col++, $row, $date);
+        $sheet->setCellValueByColumnAndRow($col++, $row, $date_info['weekday']);
+
+        foreach($a_xls as $index => $xls) {
+            $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
+        }
+        $col++;
+        foreach($a_csv as $index => $csv) {
+            $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
+        }
+    } else {
+        $col = 3;
+        foreach($a_xls as $index => $xls) {
+            $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $xls['count']);
+        }
+        $col++;
+        foreach($a_csv as $index => $csv) {
+            $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $csv['count']);
+        }
+    }
+}
+
+$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
+$writer->save($count_xls_path);
+
+echo json_encode(array('status' => 'success', 'csv_previous_path' => $csv_previous_path, 'xls_previous_path' => $xls_previous_path));
+exit;

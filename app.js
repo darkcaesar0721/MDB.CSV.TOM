@@ -19,6 +19,12 @@ const App = function() {
         $('input[name=xls_path]').val(current_xls_path);
         $('input[name=xls_previous_path]').val(current_xls_previous_path);
 
+        let myDate = new Date()
+        let pstDate = myDate.toLocaleString("en-US", {
+            timeZone: "America/Los_Angeles"
+        });
+        current_date = pstDate.split(', ')[0];
+
         handleTimeChange(current_time);
 
         toastr.options = {
@@ -84,21 +90,13 @@ const App = function() {
     }
 
     const handleTimeChange = function(time) {
-        let myDate = new Date()
-        let pstDate = myDate.toLocaleString("en-US", {
-            timeZone: "America/Los_Angeles"
-        })
+        let str_month = current_date.split('/')[0];
+        if (str_month < 10) str_month = '0' + str_month;
 
-        let date = new Date(pstDate);
-        current_date = date;
+        let str_day = current_date.split('/')[1];
+        if (str_day < 10) str_day = '0' + str_day;
 
-        let str_month = date.getMonth() + 1;
-        if (date.getMonth() + 1 < 10) str_month = '0' + str_month;
-
-        let str_day = date.getDate();
-        if (date.getDate() < 10) str_day = '0' + str_day;
-
-        current_date_str = str_month + str_day + date.getFullYear();
+        current_date_str = str_month + str_day + current_date.split('/')[2];
 
         $('#folder_name').html(current_date_str + ' ' + time);
 
