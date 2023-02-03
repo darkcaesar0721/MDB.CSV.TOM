@@ -11,7 +11,6 @@ const App = function() {
     let current_xls_previous_path = window.localStorage.getItem('xls_previous_path');
 
     const setDefaultValue = function() {
-
         $('input[name=mdb_path]').val(current_mdb_path);
         $('input[name=count_xls_path]').val(current_count_xls_path);
         $('input[name=csv_path]').val(current_csv_path);
@@ -101,9 +100,9 @@ const App = function() {
         $('#folder_name').html(current_date_str + ' ' + time);
 
         const csv_files = {
-            0: { first: '00_ALL_', last: '_CA Window Door shaisak@yahoo.com'},
+            0: { first: '00_ALL_', last: '_CA Window Door'},
             1: { first: '01_ALL_', last: '_KitchenBathDecksRenovate'},
-            2: { first: '02_LA_', last: '_CA Window Door shaisak@yahoo.com'},
+            2: { first: '02_LA_', last: '_CA Window Door'},
             3: { first: '03_SD_', last: ''},
             4: { first: '04_WA_', last: ''},
             5: { first: '05_BAY_', last: ' South'},

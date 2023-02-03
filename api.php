@@ -25,7 +25,7 @@ if (!file_exists($count_xls_path)) {
 $a_csv = array(
     0 => array(
         'query' => "003a27_00a_Alit_CA Windows Doors  ------------------------  >>",
-        'file' => "00_ALL_" . $date_str . " " . $time . "_CA Window Door shaisak@yahoo.com.csv",
+        'file' => "00_ALL_" . $date_str . " " . $time . "_CA Window Door.csv",
         'count' => ''
     ),
     1 => array(
@@ -269,20 +269,41 @@ $sheet = $spreadsheet->getActiveSheet();
 $data = $sheet->toArray();
 
 if ($date_info['wday'] == 4) {
-    $last_row = (int) $sheet->getHighestRow();
-
-    $row = $last_row + 1;
-
-    $col = 1;
-    $sheet->setCellValueByColumnAndRow($col++, $row, $date);
-    $sheet->setCellValueByColumnAndRow($col++, $row, $date_info['weekday'] . ' ' . $_time);
-
-    foreach($a_xls as $index => $xls) {
-        $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
+    $cur_index = -1;
+    $cur_row = [];
+    foreach ($data as $i => $row) {
+        if ($row[0] === $date && $row[1] === $date_info['weekday'] . ' ' . $_time) {
+            $cur_index = $i; $cur_row = $row;
+        }
     }
-    $col++;
-    foreach($a_csv as $index => $csv) {
-        $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
+
+    if ($cur_index === -1) {
+        $last_row = (int) $sheet->getHighestRow();
+
+        $row = $last_row + 1;
+
+        $col = 1;
+        $sheet->setCellValueByColumnAndRow($col++, $row, $date);
+        $sheet->setCellValueByColumnAndRow($col++, $row, $date_info['weekday'] . ' ' . $_time);
+
+        foreach($a_xls as $index => $xls) {
+            $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
+        }
+        $col++;
+        foreach($a_csv as $index => $csv) {
+            $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
+        }
+        $sheet->getStyle('C' . $row . ':T' . $row)->getAlignment()->setHorizontal('right');
+    } else {
+        $col = 3;
+        foreach($a_xls as $index => $xls) {
+            $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $xls['count']);
+        }
+        $col++;
+        foreach($a_csv as $index => $csv) {
+            $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $csv['count']);
+        }
+        $sheet->getStyle('C' . ($cur_index + 1) . ':T' . ($cur_index + 1))->getAlignment()->setHorizontal('right');
     }
 } else {
     $cur_index = -1;
@@ -309,6 +330,7 @@ if ($date_info['wday'] == 4) {
         foreach($a_csv as $index => $csv) {
             $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
         }
+        $sheet->getStyle('C' . $row . ':T' . $row)->getAlignment()->setHorizontal('left');
     } else {
         $col = 3;
         foreach($a_xls as $index => $xls) {
@@ -318,8 +340,16 @@ if ($date_info['wday'] == 4) {
         foreach($a_csv as $index => $csv) {
             $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $csv['count']);
         }
+        $sheet->getStyle('C' . ($cur_index + 1) . ':T' . ($cur_index + 1))->getAlignment()->setHorizontal('left');
     }
 }
+
+$sheet->getStyle('A')->getAlignment()->setHorizontal('right');
+
+$last_row = (int) $sheet->getHighestRow();
+$sheet->getStyle('A2:' . 'T' . ($last_row + 1))->getFont()->setBold(true)
+    ->setName('Arial')
+    ->setSize(8);
 
 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
 $writer->save($count_xls_path);
