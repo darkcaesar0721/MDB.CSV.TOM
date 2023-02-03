@@ -254,6 +254,11 @@ if ($action === 'download') {
                 }
 
                 $worksheet->fromArray($data);
+
+                $worksheet->getStyle('A1:' . 'N' . ($a_xls[$index]['count'] + 1))->getFont()->setBold(true)
+                    ->setName('Arial')
+                    ->setSize(8);
+
                 array_push($worksheets, $worksheet);
             }
 
