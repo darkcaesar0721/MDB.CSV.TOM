@@ -1,30 +1,15 @@
 const App = function() {
-    let current_date = '';
+    let myDate = new Date()
+    let pstDate = myDate.toLocaleString("en-US", {
+        timeZone: "America/Los_Angeles"
+    });
+    let current_date = pstDate.split(', ')[0];
     let current_date_str = '';
-    let current_time = '8AM';
-    let current_file_type = 'csv_xls';
-    let current_mdb_path = window.localStorage.getItem('mdb_path');
-    let current_count_xls_path = window.localStorage.getItem('count_xls_path');
-    let current_csv_path = window.localStorage.getItem('csv_path');
-    let current_csv_previous_path = window.localStorage.getItem('csv_previous_path');
-    let current_xls_path = window.localStorage.getItem('xls_path');
-    let current_xls_previous_path = window.localStorage.getItem('xls_previous_path');
 
     const setDefaultValue = function() {
-        $('input[name=mdb_path]').val(current_mdb_path);
-        $('input[name=count_xls_path]').val(current_count_xls_path);
-        $('input[name=csv_path]').val(current_csv_path);
-        $('input[name=csv_previous_path]').val(current_csv_previous_path);
-        $('input[name=xls_path]').val(current_xls_path);
-        $('input[name=xls_previous_path]').val(current_xls_previous_path);
+        getJSONData();
 
-        let myDate = new Date()
-        let pstDate = myDate.toLocaleString("en-US", {
-            timeZone: "America/Los_Angeles"
-        });
-        current_date = pstDate.split(', ')[0];
-
-        handleTimeChange(current_time);
+        handleTimeChange('8AM');
 
         toastr.options = {
             'closeButton': true,
@@ -44,51 +29,62 @@ const App = function() {
         }
     }
 
-    const initAttachEvent = function() {
-        $('input[name=mdb_path]').change(function(e) {
-            current_mdb_path = e.target.value;
-            window.localStorage.setItem('mdb_path', e.target.value);
+    const getJSONData = function() {
+        $.ajax({
+            url:'api.php',
+            type:'post',
+            data: {action: 'read_json'},
+            dataType: 'JSON',
+            success: function(resp){
+                mdb_path.value = resp.mdb_path === undefined ? '' : resp.mdb_path;
+                count_xls_path.value = resp.count_xls_path === undefined ? '' : resp.count_xls_path;
+                csv_path.value = resp.csv_path === undefined ? '' : resp.csv_path;
+                csv_previous_path.value = resp.csv_previous_path === undefined ? '' : resp.csv_previous_path;
+                xls_path.value = resp.xls_path === undefined ? '' : resp.xls_path;
+                xls_previous_path.value = resp.xls_previous_path === undefined ? '' : resp.xls_previous_path;
+            },
+            error: function(){}
         });
-
-        $('input[name=count_xls_path]').change(function(e) {
-            current_count_xls_path = e.target.value;
-            window.localStorage.setItem('count_xls_path', e.target.value);
-        });
-
-        $('input[name=csv_path]').change(function(e) {
-            current_csv_path = e.target.value;
-            window.localStorage.setItem('csv_path', e.target.value);
-        });
-
-        $('input[name=csv_previous_path]').change(function(e) {
-            current_csv_previous_path = e.target.value;
-            window.localStorage.setItem('csv_previous_path', e.target.value);
-        });
-
-        $('input[name=xls_path]').change(function(e) {
-            current_xls_path = e.target.value;
-            window.localStorage.setItem('xls_path', e.target.value);
-        });
-
-        $('input[name=xls_previous_path]').change(function(e) {
-            current_xls_previous_path = e.target.value;
-            window.localStorage.setItem('xls_previous_path', e.target.value);
-        });
-
-        $('select[name=download_time]').change(function(e) {
-            current_time = e.target.value;
-            handleTimeChange(current_time);
-        });
-
-        $('select[name=download_file_type]').change(function(e) {
-            current_file_type = e.target.value;
-            handleFileTypeChange(current_file_type)
-        });
-
-        $('#btn_download').click(download);
     }
 
-    const handleTimeChange = function(time) {
+    const initAttachEvent = function() {
+        mdb_path.oninput = handleDirectoryChange;
+        count_xls_path.oninput = handleDirectoryChange;
+        csv_path.oninput = handleDirectoryChange;
+        csv_previous_path.oninput = handleDirectoryChange;
+        xls_path.oninput = handleDirectoryChange;
+        xls_previous_path.oninput = handleDirectoryChange;
+
+        download_time.onchange = handleTimeChange;
+        download_file_type.onchange = handleFileTypeChange;
+
+        btn_download.onclick = download;
+    }
+
+    const handleDirectoryChange = function() {
+        const directory = {
+            mdb_path: mdb_path.value,
+            count_xls_path: count_xls_path.value,
+            csv_path: csv_path.value,
+            csv_previous_path : csv_previous_path.value,
+            xls_path: xls_path.value,
+            xls_previous_path: xls_previous_path.value,
+        };
+
+        $.ajax({
+            url:'api.php',
+            type:'post',
+            data: {
+                directory: JSON.stringify(directory),
+                action: 'write_json'
+            },
+            dataType: 'JSON',
+            success: function(resp){},
+            error: function(){}
+        });
+    }
+
+    const handleTimeChange = function() {
         let str_month = current_date.split('/')[0];
         if (str_month < 10) str_month = '0' + str_month;
 
@@ -97,7 +93,7 @@ const App = function() {
 
         current_date_str = str_month + str_day + current_date.split('/')[2];
 
-        $('#folder_name').html(current_date_str + ' ' + time);
+        $('#folder_name').html(current_date_str + ' ' + download_time.value);
 
         const csv_files = {
             0: { first: '00_ALL_', last: '_CA Window Door'},
@@ -113,14 +109,14 @@ const App = function() {
             10: { first: '10_TX_Dallas_', last: ''},
         }
         for (let i = 0; i <= 10; i++) {
-            $('.csv-file-' + i).html(csv_files[i].first + current_date_str + ' ' + time + csv_files[i].last);
+            $('.csv-file-' + i).html(csv_files[i].first + current_date_str + ' ' + download_time.value + csv_files[i].last);
         }
 
-        $('#excel_file_name').html(current_date_str + ' ' + time + '_PALM');
+        $('#excel_file_name').html(current_date_str + ' ' + download_time.value + '_PALM');
     }
 
-    const handleFileTypeChange = function(file_type) {
-        switch(file_type) {
+    const handleFileTypeChange = function() {
+        switch(download_file_type.value) {
             case 'csv':
                 $('#csv_group').addClass('select-group');
                 $('#xls_group').removeClass('select-group');
@@ -144,35 +140,32 @@ const App = function() {
                 url:'api.php',
                 type:'post',
                 data: {
+                    action: 'download',
                     date: current_date,
                     date_str: current_date_str,
-                    time: current_time,
-                    file_type: current_file_type,
-                    mdb_path: current_mdb_path,
-                    count_xls_path: current_count_xls_path,
-                    csv_path: current_csv_path,
-                    csv_previous_path : current_csv_previous_path,
-                    xls_path: current_xls_path,
-                    xls_previous_path: current_xls_previous_path,
+                    time: download_time.value,
+                    file_type: download_file_type.value,
+                    mdb_path: mdb_path.value,
+                    count_xls_path: count_xls_path.value,
+                    csv_path: csv_path.value,
+                    csv_previous_path : csv_previous_path.value,
+                    xls_path: xls_path.value,
+                    xls_previous_path: xls_previous_path.value,
                     folder: $('#folder_name').html(),
                 },
                 dataType: 'JSON',
                 success: function(resp){
                     $('body').unblock();
-                    console.log(resp);
 
                     if (resp.status === 'error') {
                         toastr.error(resp.description);
                     } else if (resp.status === 'warning') {
                         toastr.warning(resp.description);
                     } else {
-                        current_csv_previous_path = resp.csv_previous_path;
-                        window.localStorage.setItem('csv_previous_path', resp.csv_previous_path);
-                        $('input[name=csv_previous_path]').val(resp.csv_previous_path);
+                        csv_previous_path.value = resp.csv_previous_path;
+                        xls_previous_path.value = resp.xls_previous_path;
 
-                        current_xls_previous_path = resp.xls_previous_path;
-                        window.localStorage.setItem('xls_previous_path', resp.xls_previous_path);
-                        $('input[name=xls_previous_path]').val(resp.xls_previous_path);
+                        handleDirectoryChange();
 
                         toastr.success('download success');
                     }
@@ -184,38 +177,38 @@ const App = function() {
     }
 
     const validation = function() {
-        if (!$('input[name=mdb_path]').val()) {
-            $('input[name=mdb_path]').focus();
+        if (!mdb_path.value) {
+            mdb_path.focus();
             toastr.warning('Please input mdb file path.');
             return false;
         }
 
-        if (!$('input[name=count_xls_path]').val()) {
-            $('input[name=count_xls_path]').focus();
+        if (!count_xls_path.value) {
+            count_xls_path.focus();
             toastr.warning('Please input count excel file path.');
             return false;
         }
 
-        if (!$('input[name=csv_path]').val()) {
-            $('input[name=csv_path]').focus();
+        if (!csv_path.value) {
+            csv_path.focus();
             toastr.warning('Please input csv download path.');
             return false;
         }
 
-        if (!$('input[name=csv_previous_path]').val()) {
-            $('input[name=csv_previous_path]').focus();
+        if (!csv_previous_path.value) {
+            csv_previous_path.focus();
             toastr.warning('Please input csv previous download path.');
             return false;
         }
 
-        if (!$('input[name=xls_path]').val()) {
-            $('input[name=xls_path]').focus();
+        if (!xls_path.value) {
+            xls_path.focus();
             toastr.warning('Please input xls download path.');
             return false;
         }
 
-        if (!$('input[name=xls_previous_path]').val()) {
-            $('input[name=xls_previous_path]').focus();
+        if (!xls_previous_path.value) {
+            xls_previous_path.focus();
             toastr.warning('Please input xls previous download path.');
             return false;
         }
