@@ -47,3 +47,7 @@ label.text-center {
 .select-group {
     background-color:#e5e2e2;
 }
+
+input, select {
+    color:#000000 !important;
+}
