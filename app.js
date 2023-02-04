@@ -42,6 +42,8 @@ const App = function() {
                 csv_previous_path.value = resp.csv_previous_path === undefined ? '' : resp.csv_previous_path;
                 xls_path.value = resp.xls_path === undefined ? '' : resp.xls_path;
                 xls_previous_path.value = resp.xls_previous_path === undefined ? '' : resp.xls_previous_path;
+                trc_path.value = resp.trc_path === undefined ? '' : resp.trc_path;
+                trc_previous_path.value = resp.trc_previous_path === undefined ? '' : resp.trc_previous_path;
             },
             error: function(){}
         });
@@ -54,6 +56,8 @@ const App = function() {
         csv_previous_path.oninput = handleDirectoryChange;
         xls_path.oninput = handleDirectoryChange;
         xls_previous_path.oninput = handleDirectoryChange;
+        trc_path.oninput = handleDirectoryChange;
+        trc_previous_path.oninput = handleDirectoryChange;
 
         download_time.onchange = handleTimeChange;
         download_file_type.onchange = handleFileTypeChange;
@@ -69,6 +73,8 @@ const App = function() {
             csv_previous_path : csv_previous_path.value,
             xls_path: xls_path.value,
             xls_previous_path: xls_previous_path.value,
+            trc_path: trc_path.value,
+            trc_previous_path: trc_previous_path.value,
         };
 
         $.ajax({
@@ -125,6 +131,10 @@ const App = function() {
                 $('#csv_group').removeClass('select-group');
                 $('#xls_group').addClass('select-group');
                 break;
+            case 'trc':
+                $('#csv_group').removeClass('select-group');
+                $('#xls_group').removeClass('select-group');
+                break;
             default:
                 $('#csv_group').addClass('select-group');
                 $('#xls_group').addClass('select-group');
@@ -151,6 +161,8 @@ const App = function() {
                     csv_previous_path : csv_previous_path.value,
                     xls_path: xls_path.value,
                     xls_previous_path: xls_previous_path.value,
+                    trc_path: trc_path.value,
+                    trc_previous_path: trc_previous_path.value,
                     folder: $('#folder_name').html(),
                 },
                 dataType: 'JSON',
@@ -164,6 +176,7 @@ const App = function() {
                     } else {
                         csv_previous_path.value = resp.csv_previous_path;
                         xls_previous_path.value = resp.xls_previous_path;
+                        trc_previous_path.value = resp.trc_previous_path;
 
                         handleDirectoryChange();
 
@@ -191,25 +204,37 @@ const App = function() {
 
         if (!csv_path.value) {
             csv_path.focus();
-            toastr.warning('Please input csv download path.');
+            toastr.warning('Please input CSV download folder path.');
             return false;
         }
 
         if (!csv_previous_path.value) {
             csv_previous_path.focus();
-            toastr.warning('Please input csv previous download path.');
+            toastr.warning('Please input CSV previous download folder path.');
             return false;
         }
 
         if (!xls_path.value) {
             xls_path.focus();
-            toastr.warning('Please input xls download path.');
+            toastr.warning('Please input XLS download folder path.');
             return false;
         }
 
         if (!xls_previous_path.value) {
             xls_previous_path.focus();
-            toastr.warning('Please input xls previous download path.');
+            toastr.warning('Please input XLS previous download folder path.');
+            return false;
+        }
+
+        if (!trc_path.value) {
+            trc_path.focus();
+            toastr.warning('Please input TRC download folder path.');
+            return false;
+        }
+
+        if (!trc_previous_path.value) {
+            trc_previous_path.focus();
+            toastr.warning('Please input TRC previous download folder path.');
             return false;
         }
 

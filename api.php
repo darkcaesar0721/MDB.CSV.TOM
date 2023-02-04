@@ -26,6 +26,8 @@ if ($action === 'download') {
     $csv_previous_path = $_REQUEST['csv_previous_path'];
     $xls_path = $_REQUEST['xls_path'];
     $xls_previous_path = $_REQUEST['xls_previous_path'];
+    $trc_path = $_REQUEST['trc_path'];
+    $trc_previous_path = $_REQUEST['trc_previous_path'];
 
     $folder = $_REQUEST['folder'];
     $time = $_REQUEST['time'];
@@ -126,12 +128,40 @@ if ($action === 'download') {
         )
     );
 
+    $a_trc = array(
+        0 => array(
+            'query' => '003a23_TRC_1 CA_LA',
+            'key' => 'Date 1 - LA',
+            'count' => '',
+        ),
+        1 => array(
+            'query' => '003a23_TRC_2 CA_VENTURA',
+            'key' => 'Date 2 - VENT',
+            'count' => '',
+        ),
+        2 => array(
+            'query' => '003a23_TRC_3 CA_OR',
+            'key' => 'Date 3 - OR',
+            'count' => '',
+        ),
+        3 => array(
+            'query' => '003a23_TRC_4 CA_SB RS',
+            'key' => 'Date 4 - SB RV',
+            'count' => '',
+        ),
+        4 => array(
+            'query' => '003a23_TRC_5 WA',
+            'key' => 'Date 5 - WA',
+            'count' => '',
+        ),
+    );
+
     try {
         # OPEN BOTH DATABASE CONNECTIONS
         $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$accdatabase;Uid=;Pwd=;");
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        if ($file_type !== 'xls') {
+        if ($file_type === 'csv' || $file_type === 'all') {
             //get previous csv download information
             if (file_exists($csv_previous_path)) {
                 $files = glob($csv_previous_path . "\\" . "*.csv");
@@ -199,7 +229,7 @@ if ($action === 'download') {
 
             $csv_previous_path = $csv_path . "\\" . $folder;
         }
-        if ($file_type !== 'csv'){
+        if ($file_type === 'xls' || $file_type === 'all') {
             $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
 
             if (file_exists($xls_previous_path)) {
@@ -278,6 +308,69 @@ if ($action === 'download') {
 
             $xls_previous_path = $xls_path . "\\" . $folder;
         }
+        if ($file_type === 'trc' || $file_type === 'all') {
+            //get previous csv download information
+            if (file_exists($trc_previous_path)) {
+                $files = glob($trc_previous_path . "\\" . "*.csv");
+
+                $sel_index = -1;
+                if (($handle = fopen($files[0], "r")) !== FALSE) {
+                    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
+                        if ($sel_index !== -1) {
+                            $a_trc[$sel_index]['pre_phone'] = $data[1];
+                            $sel_index = -1;
+                        }
+
+                        foreach($a_trc as $index => $trc) {
+                            if ($trc['key'] === $data[0]) {
+                                $sel_index = $index;
+                            }
+                        }
+                    }
+                    fclose($handle);
+                } else {
+                    echo json_encode(array('status' => 'warning', 'description' => "Can't open TRC previous download file"));
+                    exit;
+                }
+            } else {
+                echo json_encode(array('status' => 'error', 'description' => 'TRC previous download file path wrong'));
+                exit;
+            }
+
+            $folder_path = $trc_path . "\\" . $folder . "\\";
+
+            if (!file_exists($folder_path)) {
+                mkdir($folder_path, 0777, true);
+            }
+
+            $fp = fopen($folder_path . "\\" . $date_str . " " . $time . '_TRC.csv', 'w');
+
+            foreach ($a_trc as $index => $trc) {
+                $query = $trc['query'];
+                $sth = $db->prepare("select * from [$query]");
+                $sth->execute();
+
+                $data = array();
+
+                fputcsv($fp, array($trc['key'], 'Phone', 'Name', 'Address', 'City', 'State', 'Zip', 'Job Group', 'County'));
+
+                $a_trc[$index]['count'] = 0;
+                while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+                    if ($row['Phone'] === $trc['pre_phone']) break;
+
+                    fputcsv($fp, array($row[$trc['key']], $row['Phone'], $row['Name'], $row['Address'], $row['City'], $row['State'], $row['Zip'], $row['Job Group'], $row['County']));
+
+                    $a_trc[$index]['count'] = $a_trc[$index]['count'] + 1;
+                }
+
+                fputcsv($fp, array('', '', '','', '', '', '', '', ''));
+            }
+
+            fclose($fp);
+
+            $trc_previous_path = $trc_path . "\\" . $folder;
+        }
+
     } catch(PDOException $e) {
         echo json_encode(array('status' => 'error', 'description' => 'mdb file path wrong'));
         exit;
@@ -313,6 +406,10 @@ if ($action === 'download') {
                 $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
             }
             $col++;
+            foreach($a_trc as $index => $trc) {
+                $sheet->setCellValueByColumnAndRow($col++, $row, $trc['count']);
+            }
+            $col++;
             foreach($a_csv as $index => $csv) {
                 $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
             }
@@ -323,10 +420,14 @@ if ($action === 'download') {
                 $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $xls['count']);
             }
             $col++;
+            foreach($a_trc as $index => $trc) {
+                $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $trc['count']);
+            }
+            $col++;
             foreach($a_csv as $index => $csv) {
                 $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $csv['count']);
             }
-            $sheet->getStyle('C' . ($cur_index + 1) . ':T' . ($cur_index + 1))->getAlignment()->setHorizontal('right');
+            $sheet->getStyle('C' . ($cur_index + 1) . ':Z' . ($cur_index + 1))->getAlignment()->setHorizontal('right');
         }
     } else {
         $cur_index = -1;
@@ -350,34 +451,42 @@ if ($action === 'download') {
                 $sheet->setCellValueByColumnAndRow($col++, $row, $xls['count']);
             }
             $col++;
+            foreach($a_trc as $index => $trc) {
+                $sheet->setCellValueByColumnAndRow($col++, $row, $trc['count']);
+            }
+            $col++;
             foreach($a_csv as $index => $csv) {
                 $sheet->setCellValueByColumnAndRow($col++, $row, $csv['count']);
             }
-            $sheet->getStyle('C' . $row . ':T' . $row)->getAlignment()->setHorizontal('left');
+            $sheet->getStyle('C' . $row . ':Z' . $row)->getAlignment()->setHorizontal('left');
         } else {
             $col = 3;
             foreach($a_xls as $index => $xls) {
                 $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $xls['count']);
             }
             $col++;
+            foreach($a_trc as $index => $trc) {
+                $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $trc['count']);
+            }
+            $col++;
             foreach($a_csv as $index => $csv) {
                 $sheet->setCellValueByColumnAndRow($col++, $cur_index + 1, $cur_row[$col - 2] . ' ' . $csv['count']);
             }
-            $sheet->getStyle('C' . ($cur_index + 1) . ':T' . ($cur_index + 1))->getAlignment()->setHorizontal('left');
+            $sheet->getStyle('C' . ($cur_index + 1) . ':Z' . ($cur_index + 1))->getAlignment()->setHorizontal('left');
         }
     }
 
     $sheet->getStyle('A')->getAlignment()->setHorizontal('right');
 
     $last_row = (int) $sheet->getHighestRow();
-    $sheet->getStyle('A2:' . 'T' . ($last_row + 1))->getFont()->setBold(true)
+    $sheet->getStyle('A2:' . 'Z' . ($last_row + 1))->getFont()->setBold(true)
         ->setName('Arial')
         ->setSize(8);
 
     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
     $writer->save($count_xls_path);
 
-    echo json_encode(array('status' => 'success', 'csv_previous_path' => $csv_previous_path, 'xls_previous_path' => $xls_previous_path));
+    echo json_encode(array('status' => 'success', 'csv_previous_path' => $csv_previous_path, 'xls_previous_path' => $xls_previous_path, 'trc_previous_path' => $trc_previous_path));
     exit;
 }
 

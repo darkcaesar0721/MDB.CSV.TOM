@@ -15,70 +15,89 @@
         <p>Please set mdb, csv, and xls path, then press download button!</p>
     </div>
     <div class="container">
-        <div class="row section-group">
-            <div class="col-sm-4">
-                <h5>INPUT MDB <span style="color: #3237d7">FILE</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">MDB</span>
-                    <input id="mdb_path" type="text" class="form-control" name="mdb_path" placeholder="D:\LeadDB_ThisSMALL.mdb">
+        <div class="section-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h5>INPUT MDB <span style="color: #3237d7">FILE</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">MDB</span>
+                        <input id="mdb_path" type="text" class="form-control" name="mdb_path" placeholder="D:\LeadDB_ThisSMALL.mdb">
+                    </div>
+                    <h5>INPUT COUNT EXCEL <span style="color: #3237d7">FILE</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">COUNT</span>
+                        <input id="count_xls_path" type="text" class="form-control" name="count_xls_path" placeholder="D:\Query Counts.xls">
+                    </div>
                 </div>
-                <h5>INPUT COUNT EXCEL <span style="color: #3237d7">FILE</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">COUNT</span>
-                    <input id="count_xls_path" type="text" class="form-control" name="count_xls_path" placeholder="D:\Query Counts.xls">
+                <div class="col-sm-4">
+                    <h5>INPUT CSV DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">CSV</span>
+                        <input id="csv_path" type="text" class="form-control" name="csv_path" placeholder="D:\work\CSV">
+                    </div>
+                    <h5>INPUT CSV PREVIOUS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">CSV</span>
+                        <input id="csv_previous_path" type="text" class="form-control" name="csv_previous_path" placeholder="D:\work\CSV\01022023 8AM">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <h5>INPUT XLS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">XLS</span>
+                        <input id="xls_path" type="text" class="form-control" name="xls_path" placeholder="D:\work\XLS">
+                    </div>
+                    <h5>INPUT XLS PREVIOUS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">XLS</span>
+                        <input id="xls_previous_path" type="text" class="form-control" name="xls_previous_path" placeholder="D:\work\xls\01022023 8AM">
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-4">
-                <h5>INPUT CSV DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">CSV</span>
-                    <input id="csv_path" type="text" class="form-control" name="csv_path" placeholder="D:\work\CSV">
+            <div class="row" style="margin-top: 2rem">
+                <div class="col-sm-4">
+                    <h5>INPUT TRC DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">TRC</span>
+                        <input id="trc_path" type="text" class="form-control" name="trc_path" placeholder="D:\work\TRC">
+                    </div>
+                    <h5>INPUT TRC PREVIOUS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
+                    <div class="input-group">
+                        <span class="input-group-addon">TRC</span>
+                        <input id="trc_previous_path" type="text" class="form-control" name="trc_previous_path" placeholder="D:\work\TRC\01022023 8AM">
+                    </div>
                 </div>
-                <h5>INPUT CSV PREVIOUS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">CSV</span>
-                    <input id="csv_previous_path" type="text" class="form-control" name="csv_previous_path" placeholder="D:\work\CSV\01022023 8AM">
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <h5>INPUT XLS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">XLS</span>
-                    <input id="xls_path" type="text" class="form-control" name="xls_path" placeholder="D:\work\XLS">
-                </div>
-                <h5>INPUT XLS PREVIOUS DOWNLOAD <span style="color: red">FOLDER</span> PATH</h5>
-                <div class="input-group">
-                    <span class="input-group-addon">XLS</span>
-                    <input id="xls_previous_path" type="text" class="form-control" name="xls_previous_path" placeholder="D:\work\xls\01022023 8AM">
-                </div>
+                <form class="col-sm-8 row form-horizontal" style="margin-top: 5rem; text-align: center !important;">
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="download_file_type">Download Way</label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="download_time" name="download_time">
+                                <option value="8AM">8AM</option>
+                                <option value="2PM">2PM</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="download_file_type" name="download_file_type">
+                                <option value="all">CSV & XLS & TRC</option>
+                                <option value="csv">CSV</option>
+                                <option value="xls">XLS</option>
+                                <option value="trc">TRC</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-primary" id="btn_download">DOWNLOAD</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4 col-sm-offset-2 folder-name">Folder Name</label>
+                        <label class="control-label col-sm-4 folder-name" id="folder_name">01262023 2PM</label>
+                    </div>
+                </form>
             </div>
         </div>
+
         <div class="row mt-1" style="margin-top: 2rem">
-            <form class="col-sm-8 col-sm-offset-2 row form-horizontal">
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="download_file_type">Download Way</label>
-                    <div class="col-sm-3">
-                        <select class="form-control" id="download_time" name="download_time">
-                            <option value="8AM">8AM</option>
-                            <option value="2PM">2PM</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select class="form-control" id="download_file_type" name="download_file_type">
-                            <option value="csv_xls">CSV & XLS</option>
-                            <option value="csv">CSV</option>
-                            <option value="xls">XLS</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <button type="button" class="btn btn-primary" id="btn_download">DOWNLOAD</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-4 col-sm-offset-2 folder-name">Folder Name</label>
-                    <label class="control-label col-sm-4 folder-name" id="folder_name">01262023 2PM</label>
-                </div>
-            </form>
+
         </div>
         <div class="row">
             <div class="col-sm-7 section-group select-group" id="csv_group">
