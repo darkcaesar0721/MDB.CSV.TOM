@@ -44,20 +44,23 @@ const App = function() {
                 xls_previous_path.value = resp.xls_previous_path === undefined ? '' : resp.xls_previous_path;
                 trc_path.value = resp.trc_path === undefined ? '' : resp.trc_path;
                 trc_previous_path.value = resp.trc_previous_path === undefined ? '' : resp.trc_previous_path;
+
+                download_time.value = resp.download_time === undefined ? '8AM' : (resp.download_time === '2PM' ? '8AM' : '2PM');
+                handleTimeChange();
             },
             error: function(){}
         });
     }
 
     const initAttachEvent = function() {
-        mdb_path.oninput = handleDirectoryChange;
-        count_xls_path.oninput = handleDirectoryChange;
-        csv_path.oninput = handleDirectoryChange;
-        csv_previous_path.oninput = handleDirectoryChange;
-        xls_path.oninput = handleDirectoryChange;
-        xls_previous_path.oninput = handleDirectoryChange;
-        trc_path.oninput = handleDirectoryChange;
-        trc_previous_path.oninput = handleDirectoryChange;
+        mdb_path.oninput = saveJSON;
+        count_xls_path.oninput = saveJSON;
+        csv_path.oninput = saveJSON;
+        csv_previous_path.oninput = saveJSON;
+        xls_path.oninput = saveJSON;
+        xls_previous_path.oninput = saveJSON;
+        trc_path.oninput = saveJSON;
+        trc_previous_path.oninput = saveJSON;
 
         download_time.onchange = handleTimeChange;
         download_file_type.onchange = handleFileTypeChange;
@@ -65,7 +68,7 @@ const App = function() {
         btn_download.onclick = download;
     }
 
-    const handleDirectoryChange = function() {
+    const saveJSON = function() {
         const directory = {
             mdb_path: mdb_path.value,
             count_xls_path: count_xls_path.value,
@@ -75,6 +78,7 @@ const App = function() {
             xls_previous_path: xls_previous_path.value,
             trc_path: trc_path.value,
             trc_previous_path: trc_previous_path.value,
+            download_time : download_time.value
         };
 
         $.ajax({
@@ -99,7 +103,7 @@ const App = function() {
 
         current_date_str = str_month + str_day + current_date.split('/')[2];
 
-        $('#folder_name').html(current_date_str + ' ' + download_time.value);
+        folder_name.value = current_date_str + ' ' + download_time.value;
 
         const csv_files = {
             0: { first: '00_ALL_', last: '_CA Window Door'},
@@ -144,6 +148,7 @@ const App = function() {
 
     const download = function() {
         if (validation()) {
+
             $('body').block({ message: 'wait for downloading file' });
 
             $.ajax({
@@ -163,7 +168,7 @@ const App = function() {
                     xls_previous_path: xls_previous_path.value,
                     trc_path: trc_path.value,
                     trc_previous_path: trc_previous_path.value,
-                    folder: $('#folder_name').html(),
+                    folder: folder_name.value,
                 },
                 dataType: 'JSON',
                 success: function(resp){
@@ -178,7 +183,10 @@ const App = function() {
                         xls_previous_path.value = resp.xls_previous_path;
                         trc_previous_path.value = resp.trc_previous_path;
 
-                        handleDirectoryChange();
+                        saveJSON();
+
+                        download_time.value = download_time.value === undefined ? '8AM' : (download_time.value === '2PM' ? '8AM' : '2PM');
+                        handleTimeChange();
 
                         toastr.success('download success');
                     }
