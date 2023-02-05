@@ -1,15 +1,8 @@
 const App = function() {
-    let myDate = new Date()
-    let pstDate = myDate.toLocaleString("en-US", {
-        timeZone: "America/Los_Angeles"
-    });
-    let current_date = pstDate.split(', ')[0];
-    let current_date_str = '';
+    let current_date = '';
 
     const setDefaultValue = function() {
         getJSONData();
-
-        handleTimeChange('8AM');
 
         toastr.options = {
             'closeButton': true,
@@ -44,9 +37,12 @@ const App = function() {
                 xls_previous_path.value = resp.xls_previous_path === undefined ? '' : resp.xls_previous_path;
                 trc_path.value = resp.trc_path === undefined ? '' : resp.trc_path;
                 trc_previous_path.value = resp.trc_previous_path === undefined ? '' : resp.trc_previous_path;
+                download_time.value = resp.download_time === undefined ? '' : resp.download_time;
+                folder_name.value = resp.folder_name === undefined ? '' : resp.folder_name;
 
-                download_time.value = resp.download_time === undefined ? '8AM' : (resp.download_time === '2PM' ? '8AM' : '2PM');
-                handleTimeChange();
+                setCurrentDate();
+                setFolderName();
+                changeDownloadFileInfo();
             },
             error: function(){}
         });
@@ -62,10 +58,38 @@ const App = function() {
         trc_path.oninput = saveJSON;
         trc_previous_path.oninput = saveJSON;
 
-        download_time.onchange = handleTimeChange;
+        folder_name.oninput = handleFolderNameChange;
+        download_time.onchange = handleDownloadTimeChange;
         download_file_type.onchange = handleFileTypeChange;
 
         btn_download.onclick = download;
+    }
+
+    const handleFolderNameChange = function() {
+        setCurrentDate();
+        changeDownloadFileInfo();
+        saveJSON();
+    }
+
+    const handleDownloadTimeChange = function() {
+        setFolderName();
+        changeDownloadFileInfo();
+        saveJSON();
+    }
+
+    const setCurrentDate = function() {
+        if (!folder_name.value) {
+            current_date = new Date()
+            let pstDate = current_date.toLocaleString("en-US", {
+                timeZone: "America/Los_Angeles"
+            });
+            current_date = pstDate.split(', ')[0];
+        } else {
+            const month = folder_name.value.split(' ')[0].substr(0, 2) * 1;
+            const day = folder_name.value.split(' ')[0].substr(2, 2) * 1;
+            const year = folder_name.value.split(' ')[0].substr(4, 4) * 1;
+            current_date = month + '/' + day + '/' + year;
+        }
     }
 
     const saveJSON = function() {
@@ -78,7 +102,8 @@ const App = function() {
             xls_previous_path: xls_previous_path.value,
             trc_path: trc_path.value,
             trc_previous_path: trc_previous_path.value,
-            download_time : download_time.value
+            download_time : download_time.value,
+            folder_name : folder_name.value,
         };
 
         $.ajax({
@@ -94,17 +119,20 @@ const App = function() {
         });
     }
 
-    const handleTimeChange = function() {
+    const setFolderName = function() {
         let str_month = current_date.split('/')[0];
         if (str_month < 10) str_month = '0' + str_month;
 
         let str_day = current_date.split('/')[1];
         if (str_day < 10) str_day = '0' + str_day;
 
-        current_date_str = str_month + str_day + current_date.split('/')[2];
+        const str_year = current_date.split('/')[2];
 
-        folder_name.value = current_date_str + ' ' + download_time.value;
+        folder_name.value = str_month + str_day + str_year + ' ' + download_time.value;
+        saveJSON();
+    }
 
+    const changeDownloadFileInfo = function() {
         const csv_files = {
             0: { first: '00_ALL_', last: '_CA Window Door'},
             1: { first: '01_ALL_', last: '_KitchenBathDecksRenovate'},
@@ -119,10 +147,10 @@ const App = function() {
             10: { first: '10_TX_Dallas_', last: ''},
         }
         for (let i = 0; i <= 10; i++) {
-            $('.csv-file-' + i).html(csv_files[i].first + current_date_str + ' ' + download_time.value + csv_files[i].last);
+            $('.csv-file-' + i).html(csv_files[i].first + folder_name.value + csv_files[i].last);
         }
 
-        $('#excel_file_name').html(current_date_str + ' ' + download_time.value + '_PALM');
+        $('#excel_file_name').html(folder_name.value + '_PALM');
     }
 
     const handleFileTypeChange = function() {
@@ -157,7 +185,6 @@ const App = function() {
                 data: {
                     action: 'download',
                     date: current_date,
-                    date_str: current_date_str,
                     time: download_time.value,
                     file_type: download_file_type.value,
                     mdb_path: mdb_path.value,
@@ -183,10 +210,17 @@ const App = function() {
                         xls_previous_path.value = resp.xls_previous_path;
                         trc_previous_path.value = resp.trc_previous_path;
 
-                        saveJSON();
+                        if (download_time.value === '2PM') {
+                            let date = new Date(current_date);
+                            date.setDate(date.getDate() + 1);
+                            let pstDate = date.toLocaleString();
+                            current_date = pstDate.split(', ')[0];
+                        }
 
-                        download_time.value = download_time.value === undefined ? '8AM' : (download_time.value === '2PM' ? '8AM' : '2PM');
-                        handleTimeChange();
+                        download_time.value = download_time.value === '2PM' ? '8AM' : '2PM';
+                        handleDownloadTimeChange();
+
+                        saveJSON();
 
                         toastr.success('download success');
                     }
@@ -243,6 +277,12 @@ const App = function() {
         if (!trc_previous_path.value) {
             trc_previous_path.focus();
             toastr.warning('Please input TRC previous download folder path.');
+            return false;
+        }
+
+        if (!folder_name.value) {
+            folder_name.focus();
+            toastr.warning('Please input folder name.');
             return false;
         }
 

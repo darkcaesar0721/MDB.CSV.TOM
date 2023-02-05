@@ -32,7 +32,6 @@ if ($action === 'download') {
     $folder = $_REQUEST['folder'];
     $time = $_REQUEST['time'];
     $date = $_REQUEST['date'];
-    $date_str = $_REQUEST['date_str'];
     $file_type = $_REQUEST['file_type'];
 
     $accdatabase = $mdb_path;
@@ -45,57 +44,57 @@ if ($action === 'download') {
     $a_csv = array(
         0 => array(
             'query' => "003a27_00a_Alit_CA Windows Doors  ------------------------  >>",
-            'file' => "00_ALL_" . $date_str . " " . $time . "_CA Window Door.csv",
+            'file' => "00_ALL_" . $folder . "_CA Window Door.csv",
             'count' => ''
         ),
         1 => array(
             'query' => "003a27_01_Alit_ALL_Kitchen Bathroom Decks",
-            'file' => "01_ALL_" . $date_str . " " . $time . "_KitchenBathDecksRenovate.csv",
+            'file' => "01_ALL_" . $folder . "_KitchenBathDecksRenovate.csv",
             'count' => ''
         ),
         2 => array(
             'query' => "003a27_02_Alit_LA",
-            'file' => "02_LA_" . $date_str . " " . $time . ".csv",
+            'file' => "02_LA_" . $folder . ".csv",
             'count' => ''
         ),
         3 => array(
             'query' => "003a27_03_Alit_SD",
-            'file' => "03_SD_" . $date_str . " " . $time . ".csv",
+            'file' => "03_SD_" . $folder . ".csv",
             'count' => ''
         ),
         4 => array(
             'query' => "003a27_04_Alit_WA",
-            'file' => "04_WA_" . $date_str . " " . $time . ".csv",
+            'file' => "04_WA_" . $folder . ".csv",
             'count' => ''
         ),
         5 => array(
             'query' => "003a27_05_Alit_BAY South",
-            'file' => "05_BAY_" . $date_str . " " . $time . " South.csv",
+            'file' => "05_BAY_" . $folder . " South.csv",
             'count' => ''
         ),
         6 => array(
             'query' => "003a27_06_Alit_BAY North",
-            'file' => "06_BAY_" . $date_str . " " . $time . " North.csv",
+            'file' => "06_BAY_" . $folder . " North.csv",
             'count' => ''
         ),
         7 => array(
             'query' => "003a27_07_Alit_OR",
-            'file' => "07_OR_" . $date_str . " " . $time . ".csv",
+            'file' => "07_OR_" . $folder . ".csv",
             'count' => ''
         ),
         8 => array(
             'query' => "003a27_08_Alit_Austin",
-            'file' => "08_TX_Austin_" . $date_str . " " . $time . ".csv",
+            'file' => "08_TX_Austin_" . $folder . ".csv",
             'count' => ''
         ),
         9 => array(
             'query' => "003a27_09_Alit_Houston",
-            'file' => "09_TX_Houston_" . $date_str . " " . $time . ".csv",
+            'file' => "09_TX_Houston_" . $folder . ".csv",
             'count' => ''
         ),
         10 => array(
             'query' => "003a27_10_Alit_Dallas",
-            'file' => "10_TX_Dallas_" . $date_str . " " . $time . ".csv",
+            'file' => "10_TX_Dallas_" . $folder . ".csv",
             'count' => ''
         )
     );
@@ -304,7 +303,7 @@ if ($action === 'download') {
 
             // Save to file.
             $writer = new PhpOffice\PhpSpreadsheet\Writer\Xls($mySpreadsheet);
-            $writer->save($folder_path . "\\" . $date_str . " " . $time . '_PALM.xls');
+            $writer->save($folder_path . "\\" . $folder . '_PALM.xls');
 
             $xls_previous_path = $xls_path . "\\" . $folder;
         }
@@ -343,7 +342,7 @@ if ($action === 'download') {
                 mkdir($folder_path, 0777, true);
             }
 
-            $fp = fopen($folder_path . "\\" . $date_str . " " . $time . '_TRC.csv', 'w');
+            $fp = fopen($folder_path . "\\" . $folder . '_TRC.csv', 'w');
 
             foreach ($a_trc as $index => $trc) {
                 $query = $trc['query'];
