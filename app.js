@@ -83,8 +83,13 @@ const App = function() {
                 },
                 dataType: 'JSON',
                 success: function(resp){
-                    toastr.success('email send success.');
-                    $('body').unblock();
+                    if (resp.status === 'success') {
+                        toastr.success('email send success.');
+                        $('body').unblock();
+                    } else {
+                        toastr.success('email send error.');
+                        $('body').unblock();
+                    }
                 },
                 error: function(){}
             });
@@ -103,7 +108,28 @@ const App = function() {
 
     const handleShai2Click = function() {
         if (validationShai2()) {
+            $('body').block({ message: 'wait for sending email' });
 
+            $.ajax({
+                url:'mail.php',
+                type:'post',
+                data: {
+                    action: 'shai2',
+                    path: csv_previous_path.value,
+                    folder_name: csv_previous_path.value.split("\\")[csv_previous_path.value.split("\\").length - 1],
+                },
+                dataType: 'JSON',
+                success: function(resp){
+                    if (resp.status === 'success') {
+                        toastr.success('email send success.');
+                        $('body').unblock();
+                    } else {
+                        toastr.success('email send error.');
+                        $('body').unblock();
+                    }
+                },
+                error: function(){}
+            });
         }
     }
 
@@ -131,8 +157,13 @@ const App = function() {
                 },
                 dataType: 'JSON',
                 success: function(resp){
-                    toastr.success('email send success.');
-                    $('body').unblock();
+                    if (resp.status === 'success') {
+                        toastr.success('email send success.');
+                        $('body').unblock();
+                    } else {
+                        toastr.success('email send error.');
+                        $('body').unblock();
+                    }
                 },
                 error: function(){}
             });
