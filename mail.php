@@ -27,7 +27,14 @@ try {
         $file_name = '00_ALL_' . $folder_name . '_CA Window Door.csv';
         $mail->AddAttachment($folder_path . '\\' . $file_name, $file_name);
     }
+    if ($_REQUEST['action'] === 'palm1') {
+        $folder_path = $_REQUEST['path'];
+        $file_name = $folder_name . '_PALM.xls';
+        $mail->AddAttachment($folder_path . '\\' . $file_name, $file_name);
+    }
     
+    $mail->Body = " ";
+
     $mail->send();
     echo "Mail has been sent successfully!";
 } catch (Exception $e) {

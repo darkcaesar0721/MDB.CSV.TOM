@@ -71,6 +71,8 @@ const App = function() {
 
     const handleShai1Click = function() {
         if (validationShai1()) {
+            $('body').block({ message: 'wait for sending email' });
+
             $.ajax({
                 url:'mail.php',
                 type:'post',
@@ -81,7 +83,8 @@ const App = function() {
                 },
                 dataType: 'JSON',
                 success: function(resp){
-
+                    toastr.success('email send success.');
+                    $('body').unblock();
                 },
                 error: function(){}
             });
@@ -116,7 +119,23 @@ const App = function() {
     
     const handlePalm1Click = function() {
         if (validationPalm1()) {
+            $('body').block({ message: 'wait for sending email' });
 
+            $.ajax({
+                url:'mail.php',
+                type:'post',
+                data: {
+                    action: 'palm1',
+                    path: xls_previous_path.value,
+                    folder_name: xls_previous_path.value.split("\\")[xls_previous_path.value.split("\\").length - 1],
+                },
+                dataType: 'JSON',
+                success: function(resp){
+                    toastr.success('email send success.');
+                    $('body').unblock();
+                },
+                error: function(){}
+            });
         }
     }
 
