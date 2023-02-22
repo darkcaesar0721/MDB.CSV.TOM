@@ -39,6 +39,9 @@ const App = function() {
                 trc_previous_path.value = resp.trc_previous_path === undefined ? '' : resp.trc_previous_path;
                 download_time.value = resp.download_time === undefined ? '' : resp.download_time;
                 folder_name.value = resp.folder_name === undefined ? '' : resp.folder_name;
+                sender_id.value = resp.sender_id === undefined ? '' : resp.sender_id;
+                password.value = resp.password === undefined ? '' : resp.password;
+                receiver_id.value = resp.receiver_id === undefined ? '' : resp.receiver_id;
 
                 setCurrentDate();
                 setFolderName();
@@ -57,6 +60,9 @@ const App = function() {
         xls_previous_path.oninput = saveJSON;
         trc_path.oninput = saveJSON;
         trc_previous_path.oninput = saveJSON;
+        sender_id.oninput = saveJSON;
+        password.oninput = saveJSON;
+        receiver_id.oninput = saveJSON;
 
         folder_name.oninput = handleFolderNameChange;
         download_time.onchange = handleDownloadTimeChange;
@@ -69,8 +75,30 @@ const App = function() {
         palm1.onclick = handlePalm1Click;
     }
 
+    const validationEmail = function() {
+        if (!sender_id.value) {
+            sender_id.focus();
+            toastr.warning('Please input sender gmail id.');
+            return false;
+        }
+
+        if (!password.value) {
+            password.focus();
+            toastr.warning('Please input sender gmail password.');
+            return false;
+        }
+
+        if (!receiver_id.value) {
+            receiver_id.focus();
+            toastr.warning('Please input receiver gmail id.');
+            return false;
+        }
+
+        return true;
+    }
+
     const handleShai1Click = function() {
-        if (validationShai1()) {
+        if (validationShai1() && validationEmail()) {
             $('body').block({ message: 'wait for sending email' });
 
             $.ajax({
@@ -79,6 +107,9 @@ const App = function() {
                 data: {
                     action: 'shai1',
                     path: csv_previous_path.value,
+                    sender: sender_id.value,
+                    password: password.value,
+                    receiver: receiver_id.value,
                     folder_name: csv_previous_path.value.split("\\")[csv_previous_path.value.split("\\").length - 1],
                 },
                 dataType: 'JSON',
@@ -107,7 +138,7 @@ const App = function() {
     }
 
     const handleShai2Click = function() {
-        if (validationShai2()) {
+        if (validationShai2() && validationEmail()) {
             $('body').block({ message: 'wait for sending email' });
 
             $.ajax({
@@ -116,7 +147,11 @@ const App = function() {
                 data: {
                     action: 'shai2',
                     path: csv_previous_path.value,
+                    sender: sender_id.value,
+                    password: password.value,
+                    receiver: receiver_id.value,
                     folder_name: csv_previous_path.value.split("\\")[csv_previous_path.value.split("\\").length - 1],
+                    count_path: count_xls_path.value,
                 },
                 dataType: 'JSON',
                 success: function(resp){
@@ -144,7 +179,7 @@ const App = function() {
     }
     
     const handlePalm1Click = function() {
-        if (validationPalm1()) {
+        if (validationPalm1() && validationEmail()) {
             $('body').block({ message: 'wait for sending email' });
 
             $.ajax({
@@ -153,6 +188,9 @@ const App = function() {
                 data: {
                     action: 'palm1',
                     path: xls_previous_path.value,
+                    sender: sender_id.value,
+                    password: password.value,
+                    receiver: receiver_id.value,
                     folder_name: xls_previous_path.value.split("\\")[xls_previous_path.value.split("\\").length - 1],
                 },
                 dataType: 'JSON',
@@ -218,6 +256,9 @@ const App = function() {
             trc_previous_path: trc_previous_path.value,
             download_time : download_time.value,
             folder_name : folder_name.value,
+            sender_id : sender_id.value,
+            password : password.value,
+            receiver_id : receiver_id.value,
         };
 
         $.ajax({
