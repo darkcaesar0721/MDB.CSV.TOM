@@ -63,6 +63,57 @@ const App = function() {
         download_file_type.onchange = handleFileTypeChange;
 
         btn_download.onclick = download;
+
+        shai1.onClick = handleShai1Click;
+        shai2.onClick = handleShai2Click;
+        palm1.onClick = handlePalm1Click;
+    }
+
+    const handleShai1Click = function() {
+        if (validationShai1()) {
+            
+        }
+    }
+
+    const validationShai1 = function() {
+        if (!csv_previous_path.value) {
+            csv_previous_path.focus();
+            toastr.warning('Please input CSV previous download folder path.');
+            return false;
+        }
+
+        return true;
+    }
+
+    const handleShai2Click = function() {
+        if (validationShai2()) {
+
+        }
+    }
+
+    const validationShai2 = function() {
+        if (!csv_previous_path.value) {
+            csv_previous_path.focus();
+            toastr.warning('Please input CSV previous download folder path.');
+            return false;
+        }
+
+        return true;
+    }
+    
+    const handlePalm1Click = function() {
+        if (validationPalm1()) {
+
+        }
+    }
+
+    const validationPalm1 = function() {
+        if (!xls_previous_path.value) {
+            xls_previous_path.focus();
+            toastr.warning('Please input XLS previous download folder path.');
+            return false;
+        }
+        return true;
     }
 
     const handleFolderNameChange = function() {
