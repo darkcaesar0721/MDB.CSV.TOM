@@ -64,14 +64,27 @@ const App = function() {
 
         btn_download.onclick = download;
 
-        shai1.onClick = handleShai1Click;
-        shai2.onClick = handleShai2Click;
-        palm1.onClick = handlePalm1Click;
+        shai1.onclick = handleShai1Click;
+        shai2.onclick = handleShai2Click;
+        palm1.onclick = handlePalm1Click;
     }
 
     const handleShai1Click = function() {
         if (validationShai1()) {
-            
+            $.ajax({
+                url:'mail.php',
+                type:'post',
+                data: {
+                    action: 'shai1',
+                    path: csv_previous_path.value,
+                    folder_name: csv_previous_path.value.split("\\")[csv_previous_path.value.split("\\").length - 1],
+                },
+                dataType: 'JSON',
+                success: function(resp){
+
+                },
+                error: function(){}
+            });
         }
     }
 

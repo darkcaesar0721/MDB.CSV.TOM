@@ -14,15 +14,20 @@ try {
     $mail->SMTPSecure = 'tls';
     $mail->Port       = 587;
 
-    $mail->setFrom('darkcaesar0721@gmail.com', 'darkcaesar0721'); // This mail-id will be same as your gmail-id
-    $mail->addAddress('blueberrypowerful2@gmail.com', 'darkcaesar');      // Enter your reciever email-id
+    $mail->setFrom('darkcaesar0721@gmail.com'); // This mail-id will be same as your gmail-id
+    $mail->addAddress('morrispeter0311@gmail.com');      // Enter your reciever email-id
 
-    $mail->AddAttachment("C:\\test\\about.txt", "test.txt");
-    // $mail->AddAttachment("about.txt", "send.txt");
     $mail->isHTML(true);                       // Set email format to HTML
-    $mail->Subject = 'Here is the subject';
-    $mail->Body    = 'AAAAA is the HTML message body <b>in bold!</b>';
-    $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+    
+    $folder_name = $_REQUEST['folder_name'];
+    $mail->Subject = $folder_name;
+
+    if ($_REQUEST['action'] === 'shai1') {
+        $folder_path = $_REQUEST['path'];
+        $file_name = '00_ALL_' . $folder_name . '_CA Window Door.csv';
+        $mail->AddAttachment($folder_path . '\\' . $file_name, $file_name);
+    }
+    
     $mail->send();
     echo "Mail has been sent successfully!";
 } catch (Exception $e) {
